@@ -2,6 +2,11 @@
 
 Secure and minimal Android app to check the current electricity price in Finland.
 
+<div style="display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:nowrap">
+  <img src="./img/current.png" alt="Current screen" style="width:250px;max-width:48%;height:auto;" />
+  <img src="./img/whole.png" alt="Whole day screen" style="width:250px;max-width:48%;height:auto;" />
+</div>
+
 ## Signing key fingerprints
 
 ```
@@ -26,6 +31,6 @@ The permission is declared in the app manifest (see `app/src/main/AndroidManifes
    - View the app's signing certificate details: the tool should display certificate fingerprints (SHA1/SHA256).
 4. Compare the displayed SHA1 and SHA256 fingerprints against the "Signing key fingerprints" listed in this README. If they match, the app is signed with the expected key.
 
-### License
+## License
 
 This app is under the MIT License.
