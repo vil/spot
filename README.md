@@ -1,4 +1,4 @@
-# Sähköpörssi
+# Pörssisähkö
 Secure and minimal Android app to check the current electricity price in Finland.
 
 ## Signing key fingerprints

@@ -4,127 +4,137 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import dev.vili.spot.ui.theme.PorssisahkoTheme
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.vili.spot.data.api.SpotApiClient
+import dev.vili.spot.data.repository.SpotPriceRepository
+import dev.vili.spot.ui.screens.CurrentlyScreen
+import dev.vili.spot.ui.screens.HourlyScreen
+import dev.vili.spot.ui.screens.SettingsScreen
+import dev.vili.spot.ui.theme.PorssisahkoTheme
+import dev.vili.spot.ui.viewmodel.SpotViewModel
+import dev.vili.spot.ui.viewmodel.SpotViewModelFactory
+import dev.vili.spot.ui.viewmodel.ThemeMode
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            PorssisahkoTheme {
-                MainScreen()
-            }
+            MainScreen()
         }
     }
 }
 
-// A simple data class to hold the info for our bottom buttons
-data class BottomNavItem(
+private data class BottomNavItem(
     val title: String,
     val icon: ImageVector
 )
 
+private enum class SpotTab {
+    CURRENTLY,
+    WHOLE_DAY,
+    SETTINGS
+}
+
 @Composable
 fun MainScreen() {
-    var selectedItemIndex by remember { mutableIntStateOf(0) }
-
-    val items = listOf(
-        BottomNavItem("Hourly", Icons.Filled.Add),
-        BottomNavItem("Tomorrow", Icons.Filled.DateRange),
-        BottomNavItem("Settings", Icons.Filled.Settings)
+    val repository = remember { SpotPriceRepository(SpotApiClient.api) }
+    val spotViewModel: SpotViewModel = viewModel(
+        factory = SpotViewModelFactory(repository)
     )
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            NavigationBar(
-                // This explicitly keeps the bottom bar background matching your theme surface
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
-            ) {
-                items.forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        icon = { Icon(item.icon, contentDescription = item.title) },
-                        label = { Text(item.title) },
-                        selected = selectedItemIndex == index,
-                        onClick = { selectedItemIndex = index }
+    val uiState by spotViewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val darkTheme = when (uiState.settings.themeMode) {
+        ThemeMode.SYSTEM -> androidx.compose.foundation.isSystemInDarkTheme()
+        ThemeMode.DARK -> true
+        ThemeMode.LIGHT -> false
+    }
+
+    var selectedTab by remember { mutableIntStateOf(SpotTab.CURRENTLY.ordinal) }
+
+    val tabs = remember {
+        listOf(
+            BottomNavItem("Currently", Icons.Filled.Home),
+            BottomNavItem("Whole day", Icons.Filled.DateRange),
+            BottomNavItem("Settings", Icons.Filled.Settings)
+        )
+    }
+
+    LaunchedEffect(uiState.errorMessage) {
+        val message = uiState.errorMessage ?: return@LaunchedEffect
+        snackbarHostState.showSnackbar(message)
+        spotViewModel.clearError()
+    }
+
+    PorssisahkoTheme(darkTheme = darkTheme) {
+        Scaffold(
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+            bottomBar = {
+                NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceVariant) {
+                    tabs.forEachIndexed { index, item ->
+                        NavigationBarItem(
+                            selected = selectedTab == index,
+                            onClick = { selectedTab = index },
+                            icon = { Icon(item.icon, contentDescription = item.title) },
+                            label = { Text(item.title) }
+                        )
+                    }
+                }
+            }
+        ) { innerPadding ->
+            when (SpotTab.entries[selectedTab]) {
+                SpotTab.CURRENTLY -> {
+                    CurrentlyScreen(
+                        viewModel = spotViewModel,
+                        contentPadding = innerPadding,
+                        modifier = Modifier
+                    )
+                }
+
+                SpotTab.WHOLE_DAY -> {
+                    HourlyScreen(
+                        viewModel = spotViewModel,
+                        contentPadding = innerPadding,
+                        modifier = Modifier
+                    )
+                }
+
+                SpotTab.SETTINGS -> {
+                    SettingsScreen(
+                        showTaxIncluded = uiState.settings.showTaxIncluded,
+                        onShowTaxIncludedChanged = spotViewModel::setShowTaxIncluded,
+                        selectedThemeMode = uiState.settings.themeMode,
+                        onThemeModeChanged = spotViewModel::setThemeMode,
+                        onRefreshClick = { spotViewModel.refreshAll(initialLoad = false) },
+                        isRefreshing = uiState.isRefreshing,
+                        modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
-    ) { innerPadding ->
-        // This Modifier passes the padding down so the screens don't get hidden behind the bottom bar
-        val screenModifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-
-        // The Traffic Cop: Switch the UI based on the selected tab
-        when (selectedItemIndex) {
-            0 -> HourlyScreen(modifier = screenModifier)
-            1 -> TomorrowScreen(modifier = screenModifier)
-            2 -> SettingsScreen(modifier = screenModifier)
-        }
-    }
-}
-
-@Composable
-fun HourlyScreen(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Hourly Prices",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-    }
-}
-
-@Composable
-fun TomorrowScreen(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Tomorrow's Prices",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-    }
-}
-
-@Composable
-fun SettingsScreen(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Settings",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onBackground
-        )
     }
 }
