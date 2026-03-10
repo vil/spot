@@ -4,11 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -29,9 +30,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.vili.spot.data.api.SpotApiClient
 import dev.vili.spot.data.repository.SpotPriceRepository
+import dev.vili.spot.ui.screens.AboutScreen
 import dev.vili.spot.ui.screens.CurrentlyScreen
 import dev.vili.spot.ui.screens.HourlyScreen
-import dev.vili.spot.ui.screens.SettingsScreen
 import dev.vili.spot.ui.theme.PorssisahkoTheme
 import dev.vili.spot.ui.viewmodel.SpotViewModel
 import dev.vili.spot.ui.viewmodel.SpotViewModelFactory
@@ -55,7 +56,7 @@ private data class BottomNavItem(
 private enum class SpotTab {
     CURRENTLY,
     WHOLE_DAY,
-    SETTINGS
+    ABOUT
 }
 
 @Composable
@@ -68,19 +69,13 @@ fun MainScreen() {
     val uiState by spotViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val darkTheme = when (uiState.settings.themeMode) {
-        ThemeMode.SYSTEM -> androidx.compose.foundation.isSystemInDarkTheme()
-        ThemeMode.DARK -> true
-        ThemeMode.LIGHT -> false
-    }
-
     var selectedTab by remember { mutableIntStateOf(SpotTab.CURRENTLY.ordinal) }
 
     val tabs = remember {
         listOf(
             BottomNavItem("Currently", Icons.Filled.Home),
             BottomNavItem("Whole day", Icons.Filled.DateRange),
-            BottomNavItem("Settings", Icons.Filled.Settings)
+            BottomNavItem("About", Icons.Filled.Info)
         )
     }
 
@@ -90,7 +85,7 @@ fun MainScreen() {
         spotViewModel.clearError()
     }
 
-    PorssisahkoTheme(darkTheme = darkTheme) {
+    PorssisahkoTheme(darkTheme = isSystemInDarkTheme()) {
         Scaffold(
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             bottomBar = {
@@ -123,15 +118,11 @@ fun MainScreen() {
                     )
                 }
 
-                SpotTab.SETTINGS -> {
-                    SettingsScreen(
-                        showTaxIncluded = uiState.settings.showTaxIncluded,
-                        onShowTaxIncludedChanged = spotViewModel::setShowTaxIncluded,
-                        selectedThemeMode = uiState.settings.themeMode,
-                        onThemeModeChanged = spotViewModel::setThemeMode,
-                        onRefreshClick = { spotViewModel.refreshAll(initialLoad = false) },
-                        isRefreshing = uiState.isRefreshing,
-                        modifier = Modifier.padding(innerPadding)
+                SpotTab.ABOUT -> {
+                    AboutScreen (
+                        viewModel = spotViewModel,
+                        contentPadding = innerPadding,
+                        modifier = Modifier
                     )
                 }
             }

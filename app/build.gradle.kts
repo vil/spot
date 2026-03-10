@@ -3,6 +3,23 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.accrescent.bundletool)
+}
+
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(keystorePropertiesFile.inputStream())
+}
+
+bundletool {
+    signingConfig {
+        storeFile.set(file(keystoreProperties.getProperty("storeFile", "")))
+        storePassword.set(keystoreProperties.getProperty("storePassword", ""))
+        keyAlias.set(keystoreProperties.getProperty("keyAlias", ""))
+        keyPassword.set(keystoreProperties.getProperty("keyPassword", ""))
+    }
 }
 
 android {
@@ -23,13 +40,6 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePropertiesFile = rootProject.file("keystore.properties")
-            val keystoreProperties = Properties()
-
-            if (keystorePropertiesFile.exists()) {
-                keystoreProperties.load(keystorePropertiesFile.inputStream())
-            }
-
             storeFile = file(keystoreProperties.getProperty("storeFile", ""))
             storePassword = keystoreProperties.getProperty("storePassword", "")
             keyAlias = keystoreProperties.getProperty("keyAlias", "")
@@ -43,9 +53,8 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-            "proguard-rules.pro"
+                "proguard-rules.pro"
             )
-            // Accrescent Requirement: Sign with your release key
             signingConfig = signingConfigs.getByName("release")
         }
         debug {

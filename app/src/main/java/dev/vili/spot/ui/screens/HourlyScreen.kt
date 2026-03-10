@@ -43,7 +43,7 @@ fun HourlyScreen(
 
     val prices = uiState.dayPrices
     val isLoading = uiState.isLoading
-    val isRefreshing = uiState.isRefreshing
+    // val isRefreshing = uiState.isRefreshing
     val errorMessage = uiState.errorMessage
     val showTaxIncluded = uiState.settings.showTaxIncluded
 
@@ -60,23 +60,13 @@ fun HourlyScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(contentPadding),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Whole Day", style = MaterialTheme.typography.headlineSmall)
-            Button(
-                onClick = { viewModel.refreshAll(initialLoad = false) },
-                enabled = !isLoading && !isRefreshing
-            ) {
-                Text(if (isRefreshing) "Refreshing..." else "Refresh")
-            }
-        }
+        Text("Whole Day",
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center
+        )
 
         if (errorMessage != null && prices.isEmpty()) {
             Surface(

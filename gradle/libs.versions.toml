@@ -10,11 +10,12 @@ kotlin = "2.0.21"
 composeBom = "2024.09.00"
 retrofit = "3.0.0"
 moshi = "1.15.2"
-okhttp = "4.12.0"
+okhttp = "5.3.2"
 kotlinxSerializationJson = "1.10.0"
 lifecycleViewmodelCompose = "2.10.0"
 lifecycleRuntimeCompose = "2.10.0"
 kotlinxCoroutinesAndroid = "1.10.2"
+bundletool = "0.2.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,3 +45,4 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+accrescent-bundletool = { id = "app.accrescent.tools.bundletool", version.ref = "bundletool" }
