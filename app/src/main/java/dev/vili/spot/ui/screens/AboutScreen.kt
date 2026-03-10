@@ -72,7 +72,7 @@ fun AboutScreen(
                     // No email app available — silently ignore for now
                 }
             }) {
-                Text("Contact dev")
+                Text("Send feedback")
             }
 
             Button(onClick = {
@@ -84,7 +84,7 @@ fun AboutScreen(
                     // No browser available
                 }
             }) {
-                Text("Visit website")
+                Text("Developer's website")
             }
 
             Button(onClick = {

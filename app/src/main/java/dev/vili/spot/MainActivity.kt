@@ -5,7 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
@@ -21,9 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,7 +36,7 @@ import dev.vili.spot.ui.screens.HourlyScreen
 import dev.vili.spot.ui.theme.PorssisahkoTheme
 import dev.vili.spot.ui.viewmodel.SpotViewModel
 import dev.vili.spot.ui.viewmodel.SpotViewModelFactory
-import dev.vili.spot.ui.viewmodel.ThemeMode
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,8 +69,6 @@ fun MainScreen() {
     val uiState by spotViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var selectedTab by remember { mutableIntStateOf(SpotTab.CURRENTLY.ordinal) }
-
     val tabs = remember {
         listOf(
             BottomNavItem("Currently", Icons.Filled.Home),
@@ -78,6 +76,9 @@ fun MainScreen() {
             BottomNavItem("About", Icons.Filled.Info)
         )
     }
+
+    val pagerState = rememberPagerState(initialPage = SpotTab.CURRENTLY.ordinal, pageCount = { tabs.size })
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(uiState.errorMessage) {
         val message = uiState.errorMessage ?: return@LaunchedEffect
@@ -92,8 +93,12 @@ fun MainScreen() {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceVariant) {
                     tabs.forEachIndexed { index, item ->
                         NavigationBarItem(
-                            selected = selectedTab == index,
-                            onClick = { selectedTab = index },
+                            selected = pagerState.currentPage == index,
+                            onClick = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            },
                             icon = { Icon(item.icon, contentDescription = item.title) },
                             label = { Text(item.title) }
                         )
@@ -101,30 +106,40 @@ fun MainScreen() {
                 }
             }
         ) { innerPadding ->
-            when (SpotTab.entries[selectedTab]) {
-                SpotTab.CURRENTLY -> {
-                    CurrentlyScreen(
-                        viewModel = spotViewModel,
-                        contentPadding = innerPadding,
-                        modifier = Modifier
-                    )
-                }
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+            ) { page ->
+                when (SpotTab.entries[page]) {
+                    SpotTab.CURRENTLY -> {
+                        CurrentlyScreen(
+                            viewModel = spotViewModel,
+                            contentPadding = innerPadding,
+                            modifier = Modifier
+                        )
+                    }
 
-                SpotTab.WHOLE_DAY -> {
-                    HourlyScreen(
-                        viewModel = spotViewModel,
-                        contentPadding = innerPadding,
-                        modifier = Modifier
-                    )
-                }
+                    SpotTab.WHOLE_DAY -> {
+                        HourlyScreen(
+                            viewModel = spotViewModel,
+                            contentPadding = innerPadding,
+                            modifier = Modifier
+                        )
+                    }
 
-                SpotTab.ABOUT -> {
-                    AboutScreen (
-                        viewModel = spotViewModel,
-                        contentPadding = innerPadding,
-                        modifier = Modifier
-                    )
+                    SpotTab.ABOUT -> {
+                        AboutScreen(
+                            viewModel = spotViewModel,
+                            contentPadding = innerPadding,
+                            modifier = Modifier
+                        )
+                    }
                 }
+            }
+
+            // keep bottom nav in sync when user swipes pages
+            LaunchedEffect(pagerState.currentPage) {
+                // no-op here: bottom bar reads pagerState.currentPage directly for selection
             }
         }
     }
