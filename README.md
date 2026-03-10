@@ -17,3 +17,7 @@ SHA256: 03:65:47:32:EC:9A:B8:D0:A7:B7:6E:F6:F3:91:55:5E:59:EC:42:4D:0A:FF:4B:A8:
    - Select the installed app (Pörssisähkö) or point the tool to the APK file.
    - View the app's signing certificate details: the tool should display certificate fingerprints (SHA1/SHA256).
 4. Compare the displayed SHA1 and SHA256 fingerprints against the "Signing key fingerprints" listed in this README. If they match, the app is signed with the expected key.
+
+### License
+
+This app is under the MIT License.
