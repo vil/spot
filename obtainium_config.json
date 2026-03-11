@@ -1,0 +1,8 @@
+{
+  "id": "dev.vili.spot",
+  "url": "https://github.com/vil/spot",
+  "author": "Vili",
+  "name": "Pörssisähkö",
+  "preferredApkIndex": 0,
+  "additionalSettings": "{\"includePrereleases\":false,\"fallbackToOlderReleases\":true,\"filterReleaseTitlesByRegEx\":\"\",\"filterReleaseNotesByRegEx\":\"\",\"verifyLatestTag\":true,\"dontSortReleasesList\":false,\"useLatestAssetDateAsReleaseDate\":false,\"trackOnly\":false,\"versionExtractionRegEx\":\"\",\"matchGroupToUse\":\"\",\"versionDetection\":true,\"releaseDateAsVersion\":false,\"useVersionCodeAsOSVersion\":false,\"apkFilterRegEx\":\"\",\"invertAPKFilter\":false,\"autoApkFilterByArch\":true,\"appName\":\"Pörssisähkö\",\"exemptFromBackgroundUpdates\":false,\"skipUpdateNotifications\":false,\"about\":\"Secure and minimal Android app to check the current electricity price in Finland.\",\"appAuthor\":\"Vili\"}"
+}
