@@ -48,6 +48,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// version string
+const val VERSION = "1.0.1"
+
 private data class BottomNavItem(
     val title: String,
     val icon: ImageVector

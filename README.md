@@ -1,4 +1,4 @@
-# Pörssisähkö
+# Pörssisähkö Android App
 
 Secure and minimal Android app to check the current electricity price in Finland.
 

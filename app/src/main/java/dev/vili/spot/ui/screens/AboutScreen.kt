@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import dev.vili.spot.VERSION
 import dev.vili.spot.ui.viewmodel.SpotViewModel
 
 @Composable
@@ -31,8 +32,8 @@ fun AboutScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val showTaxIncluded = uiState.settings.showTaxIncluded
+    // val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    // val showTaxIncluded = uiState.settings.showTaxIncluded
 
     Column(
         modifier = modifier
@@ -59,11 +60,17 @@ fun AboutScreen(
                 textAlign = TextAlign.Center
             )
 
+            Text(
+                text = "Version $VERSION",
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(onClick = {
                 val email = "v@vili.dev"
-                val subject = "Pörssisähkö feedback"
+                val subject = "Android App feedback"
                 val uri = "mailto:$email?subject=${Uri.encode(subject)}".toUri()
                 val intent = Intent(Intent.ACTION_SENDTO, uri)
                 try {
