@@ -63,7 +63,7 @@ fun HourlyScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(18.dp)
     ) {
-        Text("Whole Day",
+        Text("Today",
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )

@@ -19,7 +19,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.vili.spot.ui.viewmodel.SpotViewModel
-import java.time.OffsetDateTime
+import java.time.ZonedDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -70,9 +71,10 @@ fun CurrentlyScreen(
 
             current != null -> {
                 val timeText = runCatching {
-                    OffsetDateTime.parse(current.dateTime)
-                        .format(DateTimeFormatter.ofPattern("EEE HH:mm", Locale.getDefault()))
-                }.getOrElse { current.dateTime }
+                                    ZonedDateTime.now(ZoneId.systemDefault())
+                                        .withSecond(0).withNano(0)
+                                        .format(DateTimeFormatter.ofPattern("EEE HH:mm", Locale.getDefault()))
+                                }.getOrElse { current.dateTime }
 
                 val shownPrice = if (showTaxIncluded) current.priceWithTax else current.priceNoTax
                 val shownLabel = if (showTaxIncluded) "With tax" else "Without tax"
@@ -83,7 +85,7 @@ fun CurrentlyScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Current quarter",
+                        text = "Right now:",
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center

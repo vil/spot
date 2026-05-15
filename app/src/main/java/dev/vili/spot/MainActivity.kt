@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
 }
 
 // version string
-const val VERSION = "1.0.1"
+const val VERSION = "1.0.2"
 
 private data class BottomNavItem(
     val title: String,
@@ -75,7 +75,7 @@ fun MainScreen() {
     val tabs = remember {
         listOf(
             BottomNavItem("Currently", Icons.Filled.Home),
-            BottomNavItem("Whole day", Icons.Filled.DateRange),
+            BottomNavItem("Today", Icons.Filled.DateRange),
             BottomNavItem("About", Icons.Filled.Info)
         )
     }
