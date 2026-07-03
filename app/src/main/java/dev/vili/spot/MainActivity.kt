@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
 }
 
 // version string
-const val VERSION = "1.0.3"
+const val VERSION = "1.0.4"
 
 private data class BottomNavItem(
     val title: String,
