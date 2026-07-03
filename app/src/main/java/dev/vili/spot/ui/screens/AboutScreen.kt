@@ -69,32 +69,6 @@ fun AboutScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(onClick = {
-                val email = "v@vili.dev"
-                val subject = "Android App feedback"
-                val uri = "mailto:$email?subject=${Uri.encode(subject)}".toUri()
-                val intent = Intent(Intent.ACTION_SENDTO, uri)
-                try {
-                    context.startActivity(intent)
-                } catch (_: ActivityNotFoundException) {
-                    // No email app available — silently ignore for now
-                }
-            }) {
-                Text("Send feedback")
-            }
-
-            Button(onClick = {
-                val url = "https://vili.dev"
-                val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-                try {
-                    context.startActivity(intent)
-                } catch (_: ActivityNotFoundException) {
-                    // No browser available
-                }
-            }) {
-                Text("Developer's website")
-            }
-
-            Button(onClick = {
                 val url = "https://github.com/vil/spot"
                 val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                 try {

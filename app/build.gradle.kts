@@ -25,15 +25,15 @@ bundletool {
 android {
     namespace = "dev.vili.spot"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "dev.vili.spot"
-        minSdk = 29
-        targetSdk = 36
+        minSdk = 34
+        targetSdk = 37
         versionCode = 1
-        versionName = "1.0.2"
+        versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
