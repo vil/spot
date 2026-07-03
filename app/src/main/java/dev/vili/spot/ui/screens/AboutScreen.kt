@@ -2,7 +2,6 @@ package dev.vili.spot.ui.screens
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -10,20 +9,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
+import androidx.compose.material3.IconButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import dev.vili.spot.VERSION
 import dev.vili.spot.ui.viewmodel.SpotViewModel
+import dev.vili.spot.R
 
 @Composable
 fun AboutScreen(
@@ -68,7 +69,7 @@ fun AboutScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(onClick = {
+            IconButton(onClick = {
                 val url = "https://github.com/vil/spot"
                 val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                 try {
@@ -77,7 +78,11 @@ fun AboutScreen(
                     // No browser available
                 }
             }) {
-                Text("View source (GitHub)")
+                Icon(
+                    painter = painterResource(id = R.drawable.github),
+                    contentDescription = "View source on GitHub",
+                    modifier = Modifier.size(32.dp)
+                )
             }
         }
 
